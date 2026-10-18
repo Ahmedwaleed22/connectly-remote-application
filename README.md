@@ -12,7 +12,9 @@ contract documented by Remote's installable applications.
 
 1. On your own computer, create a key if needed:
    `ssh-keygen -t ed25519 -f ~/.ssh/remote-project`.
-2. Upload `ssh-access-0.1.0.zip` in **Settings → Applications**.
+2. Download `ssh-access-<version>.zip` from the
+   [latest release](https://github.com/Ahmedwaleed22/remote-ssh-access-plugin/releases/latest)
+   and upload it in **Settings → Applications**.
 3. Install **SSH Access** in the project's Applications tab. Paste the contents
    of `~/.ssh/remote-project.pub` into **SSH public key**. Keep the private key
    on your computer. Use a different key for each project if desired.
@@ -76,6 +78,31 @@ manage any other SSH access you previously enabled in the container.
 The project container must be running. Container stop/recycle interrupts sessions;
 reconnect when Remote has restored the container and application. This package
 does not configure firewalls, DNS, NAT, or keep a project awake indefinitely.
+
+## Releases
+
+Set `version` in `application.json`, commit and push the changes, then push the
+matching tag. For example, with version `0.1.0`:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+GitHub Actions checks the package, creates a GitHub Release, and attaches
+`ssh-access-0.1.0.zip`. Download that asset to install in Remote. The automatic
+GitHub source archives include development files; the attached plugin ZIP holds
+only `README.md`, `application.json`, and `infra/install.sh` at its root.
+A tag/version mismatch fails the workflow before publishing. Use a new version
+and tag for each release. No additional GitHub token secret is needed: the
+workflow uses its repository-scoped `GITHUB_TOKEN` with `contents: write`.
+
+To build the same ZIP locally:
+
+```bash
+python3 -B infra/test_package.py
+python3 -B infra/package.py --tag v0.1.0 --output-dir /tmp/ssh-access-release
+```
 
 ## Verification
 

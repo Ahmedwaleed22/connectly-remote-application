@@ -1,0 +1,42 @@
+name: Release installable ZIP
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Check packaging and shell syntax
+        run: |
+          python3 -B infra/test_package.py
+          bash -n infra/install.sh
+      - name: Build installable ZIP
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: python3 -B infra/package.py --tag "$RELEASE_TAG" --output-dir "$RUNNER_TEMP/package"
+      - name: Publish release with ZIP attachment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" "$RUNNER_TEMP"/package/*.zip --clobber
+          else
+            gh release create "$RELEASE_TAG" "$RUNNER_TEMP"/package/*.zip \
+              --verify-tag --title "Remote's SSH Access $RELEASE_TAG" --generate-notes
+          fi
