@@ -92,7 +92,7 @@ git push origin v0.1.0
 GitHub Actions checks the package, creates a GitHub Release, and attaches
 `ssh-access-0.1.0.zip`. Download that asset to install in Remote. The automatic
 GitHub source archives include development files; the attached plugin ZIP holds
-only `README.md`, `application.json`, and `infra/install.sh` at its root.
+only `README.md`, `LICENSE`, `application.json`, and `infra/install.sh` at its root.
 A tag/version mismatch fails the workflow before publishing. Use a new version
 and tag for each release. No additional GitHub token secret is needed: the
 workflow uses its repository-scoped `GITHUB_TOKEN` with `contents: write`.
@@ -114,3 +114,9 @@ listener to test successful login and rejection of an unrelated key.
 Run `bash -n infra/install.sh` for shell syntax. Fresh apt installation, full LXD
 lifecycle, VS Code interaction, and external firewall reachability must be verified
 on your Remote server after installation.
+
+## License
+
+Licensed under the GNU Affero General Public License, version 3 or later
+(`AGPL-3.0-or-later`), matching [Remote's license](https://github.com/futrx-com/remote.futrx/blob/main/LICENSE).
+See [LICENSE](LICENSE) for the complete terms. The license is included in release ZIPs.
