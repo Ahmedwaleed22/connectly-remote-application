@@ -41,6 +41,7 @@ class SSHAccessTests(unittest.TestCase):
         for original, replacement in (
             ("/workspace/.ssh-access", str(self.state)),
             ("/etc/ssh", str(self.config_dir)),
+            ("/etc/profile.d", str(self.root / "profile.d")),
             ("/run/sshd", str(self.root / "run-sshd")),
             ("/run/ssh-access.pid", str(self.root / "sshd.pid")),
         ):
@@ -66,12 +67,17 @@ class SSHAccessTests(unittest.TestCase):
         self.assertEqual(identity, (self.state / "ssh_host_ed25519_key").read_bytes())
         self.assertEqual((self.state / "authorized_keys").stat().st_mode & 0o777, 0o600)
         self.assertEqual(self.state.stat().st_mode & 0o777, 0o700)
+        profile = self.root / "profile.d/connectly-workspace.sh"
+        directory = subprocess.check_output(["bash", "-c", '. "$1"; pwd', "bash", str(profile)],
+                                            env=dict(os.environ, SSH_CONNECTION="test"), text=True)
+        self.assertEqual(directory.strip(), "/workspace")
         effective = subprocess.check_output(
             ["/usr/sbin/sshd", "-T", "-f", str(self.config)], text=True)
         for line in ("passwordauthentication no", "kbdinteractiveauthentication no",
                      "authenticationmethods publickey", "allowusers root",
                      "allowtcpforwarding yes", "allowagentforwarding no"):
             self.assertIn(line, effective.splitlines())
+        self.assertIn("subsystem sftp internal-sftp -d /workspace", effective.splitlines())
 
     def test_rejects_invalid_keys_without_writing_state(self):
         for key in ("", "not-a-key", "ssh-ed25519 invalid-base64",
@@ -127,6 +133,13 @@ class SSHAccessTests(unittest.TestCase):
         self.assertEqual(accepted.returncode, 0,
                          accepted.stderr + (self.root / "server.log").read_text())
         self.assertEqual(accepted.stdout, "ssh-access-authenticated")
+        sftp = subprocess.run([
+            "sftp", "-F", "/dev/null", "-b", "-", "-o", "BatchMode=yes", "-o",
+            "IdentitiesOnly=yes", "-o", "StrictHostKeyChecking=yes", "-o",
+            f"UserKnownHostsFile={known}", "-i", str(self.key), "-P", str(self.port),
+            "root@127.0.0.1"], input="pwd\n", capture_output=True, text=True, timeout=10)
+        self.assertEqual(sftp.returncode, 0, sftp.stderr)
+        self.assertIn("Remote working directory: /workspace", sftp.stdout)
         wrong = self.root / "wrong"
         subprocess.run(["ssh-keygen", "-q", "-t", "ed25519", "-N", "",
                         "-f", str(wrong)], check=True)

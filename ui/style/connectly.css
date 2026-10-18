@@ -1,0 +1,8 @@
+.connectly { width: 100%; min-width: 0; color: rgb(var(--fg)); font-size: 13px; border: 1px solid var(--line); border-radius: 8px; padding: 12px; box-sizing: border-box; }
+.connectly p { margin: 8px 0; overflow-wrap: anywhere; }
+.connectly div { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.connectly button, .connectly a { min-height: 44px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 6px; background: rgb(var(--bg-raised-rgb)); color: rgb(var(--fg-bright)); cursor: pointer; font: inherit; }
+.connectly a { display: inline-flex; align-items: center; text-decoration: none; }
+.connectly button:hover, .connectly a:hover { background: rgb(var(--accent-blue) / .14); }
+.connectly button:focus-visible, .connectly a:focus-visible { outline: 2px solid rgb(var(--accent-blue)); outline-offset: 2px; }
+.connectly code { display: block; flex-basis: 100%; white-space: pre-wrap; overflow-wrap: anywhere; user-select: text; padding: 8px; background: rgb(var(--bg-inset-rgb)); border-radius: 6px; }

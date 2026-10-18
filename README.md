@@ -12,20 +12,26 @@ contract documented by Remote's installable applications.
 
 1. On your own computer, create a key if needed:
    `ssh-keygen -t ed25519 -f ~/.ssh/remote-project`.
+   Load it into your local SSH agent with `ssh-add ~/.ssh/remote-project`.
 2. Download the installable ZIP from the
    [latest release](https://github.com/Ahmedwaleed22/connectly-remote-plugin/releases/latest)
    and upload it in **Settings → Applications**.
 3. Install **Connectly** in the project's Applications tab. Paste the contents
    of `~/.ssh/remote-project.pub` into **SSH public key**. Keep the private key
    on your computer. Use a different key for each project if desired.
-4. Read the allocated host port on the installed application. Remote prefers
-   2222 and allocates a free port on conflict: six projects can receive
-   2222–2227, depending on ports already in use. Upgrades preserve that port.
-5. Connect to the Remote **server's public IP or directly resolving hostname**:
-   `ssh -i ~/.ssh/remote-project -p 2222 root@SERVER_IP`.
-   Substitute the actual allocated port. This is raw TCP SSH, not the HTTPS
-   dev-server URL. Allow that TCP port in your host/cloud firewall; a proxied
-   HTTP hostname cannot carry this connection.
+4. Click **Connect** on the Connectly card, or use its panel below the app list.
+   **Public SSH** shows the server's public IPv4
+   address and this container's allocated SSH port. Use **Copy SSH command** to
+   connect directly into `/workspace`, or **Open /workspace in VS Code**.
+   Your SSH key must be available through your local SSH agent or SSH config.
+5. Allow the displayed TCP port in your host/cloud firewall. This is raw SSH,
+   not the HTTPS dev-server URL; a proxied HTTP hostname cannot carry it.
+
+Connectly detects the Remote server's outbound public IPv4 address using ipify
+from its host backend. If your server uses NAT, a VPN, or a different ingress IP,
+set **Public SSH IPv4 address** during installation. The generic Remote connection
+panel still shows the listener's bind address (`0.0.0.0`); use Connectly's
+**Public SSH** address to connect from your computer.
 
 Add this to your local `~/.ssh/config`, using the actual host and port:
 
@@ -38,8 +44,10 @@ Host remote-project
     IdentitiesOnly yes
 ```
 
-In VS Code, install **Remote - SSH**, select **Connect to Host → remote-project**,
-then open `/workspace`. SSH grants root access inside that project's container,
+In VS Code, install **Remote - SSH**, then use Connectly's **Open /workspace in
+VS Code** link. If the browser cannot open VS Code, use **Copy VS Code command**
+and run it locally. SSH login shells and SFTP also start in `/workspace`.
+SSH grants root access inside that project's container,
 matching the agent's workspace permissions. Only public-key authentication is
 enabled; there is no generated password to reveal. The connection identity is
 the server host, allocated port, username `root`, and your local private key.
@@ -78,6 +86,8 @@ manage any other SSH access you previously enabled in the container.
 The project container must be running. Container stop/recycle interrupts sessions;
 reconnect when Remote has restored the container and application. This package
 does not configure firewalls, DNS, NAT, or keep a project awake indefinitely.
+Connectly's workspace login setup remains in `/etc/profile.d/connectly-workspace.sh`
+after uninstall; remove that file to restore the default SSH login directory.
 
 ## License
 

@@ -55,7 +55,14 @@ if [[ ! -f "$state/ssh_host_ed25519_key" ]]; then
 fi
 chown root:root "$state/ssh_host_ed25519_key"
 chmod 600 "$state/ssh_host_ed25519_key"
-install -d -m 755 /run/sshd /etc/ssh
+install -d -m 755 /run/sshd /etc/ssh /etc/profile.d
+cat > /etc/profile.d/connectly-workspace.sh <<'EOF'
+# Start SSH login shells in the project workspace, leaving command execution alone.
+if [ -n "${SSH_CONNECTION:-}" ] && [ -d /workspace ]; then
+  cd /workspace
+fi
+EOF
+chmod 644 /etc/profile.d/connectly-workspace.sh
 cat > /etc/ssh/ssh-access.conf <<EOF
 Port ${port}
 ListenAddress 0.0.0.0
@@ -78,7 +85,7 @@ X11Forwarding no
 PermitTunnel no
 PermitUserEnvironment no
 PrintMotd no
-Subsystem sftp internal-sftp
+Subsystem sftp internal-sftp -d /workspace
 EOF
 /usr/sbin/sshd -t -f /etc/ssh/ssh-access.conf
 printf 'install: SSH configured on internal port %s (key authentication only)\n' "$port"

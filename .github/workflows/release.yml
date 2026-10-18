@@ -23,6 +23,7 @@ jobs:
       - name: Check packaging and shell syntax
         run: |
           python3 -B infra/test_package.py
+          node --experimental-default-type=module --test infra/test_connection.mjs
           bash -n infra/install.sh
       - name: Build installable ZIP
         env:

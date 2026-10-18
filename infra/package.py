@@ -13,7 +13,10 @@ def build_package(root, output_dir, tag):
         raise ValueError("release version must have the form 0.1.0")
     if tag != f"v{version}":
         raise ValueError(f"tag {tag!r} must match application.json version v{version}")
-    files = ("README.md", "LICENSE", "application.json", "infra/install.sh")
+    files = ["README.md", "LICENSE", "application.json", "infra/install.sh"]
+    for directory, extensions in (("backend", (".go",)), ("ui", (".js", ".css"))):
+        files.extend(str(path.relative_to(root)) for path in sorted((root / directory).rglob("*"))
+                     if path.is_file() and path.suffix in extensions and not path.name.endswith("_test.go"))
     for name in files:
         if not (root / name).is_file() or (root / name).is_symlink():
             raise ValueError(f"missing regular package file: {name}")

@@ -3,7 +3,7 @@
   "name": "Connectly",
   "description": "Connect to this project's container using SSH or VS Code Remote SSH with your own key.",
   "category": "development",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "icon": "terminal",
   "scopes": ["project"],
   "port": {
@@ -17,9 +17,14 @@
       "key": "SSH_PUBLIC_KEY",
       "label": "SSH public key (one OpenSSH public key, never your private key)",
       "required": true
+    },
+    {
+      "key": "SSH_PUBLIC_IP",
+      "label": "Public SSH IPv4 address (optional; detect automatically when blank)"
     }
   ],
   "connection": { "user": "root" },
+  "backend": { "access": "registered", "timeoutMs": 10000 },
   "service": {
     "name": "ssh-access",
     "description": "Project SSH access",

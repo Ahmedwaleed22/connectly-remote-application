@@ -18,6 +18,11 @@ class PackageTests(unittest.TestCase):
         (self.root / "LICENSE").write_text("License text")
         (self.root / "infra/install.sh").write_text("#!/bin/bash\n")
         (self.root / "infra/test_install.py").write_text("development-only")
+        (self.root / "backend").mkdir()
+        (self.root / "backend/main.go").write_text("package main")
+        (self.root / "backend/main_test.go").write_text("development-only")
+        (self.root / "ui/scripts").mkdir(parents=True)
+        (self.root / "ui/scripts/main.js").write_text("export default () => {};")
         self.output = Path(temporary.name) / "output"
 
     def test_installable_zip_has_only_runtime_files(self):
@@ -26,7 +31,8 @@ class PackageTests(unittest.TestCase):
         with zipfile.ZipFile(archive) as package:
             self.assertIsNone(package.testzip())
             self.assertEqual(set(package.namelist()),
-                             {"README.md", "LICENSE", "application.json", "infra/install.sh"})
+                             {"README.md", "LICENSE", "application.json", "infra/install.sh",
+                              "backend/main.go", "ui/scripts/main.js"})
             self.assertEqual(package.read("LICENSE"), b"License text")
             self.assertEqual(json.loads(package.read("application.json"))["version"],
                              "0.1.0")
