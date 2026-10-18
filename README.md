@@ -12,7 +12,6 @@ contract documented by Remote's installable applications.
 
 1. On your own computer, create a key if needed:
    `ssh-keygen -t ed25519 -f ~/.ssh/remote-project`.
-   Load it into your local SSH agent with `ssh-add ~/.ssh/remote-project`.
 2. Download the installable ZIP from the
    [latest release](https://github.com/Ahmedwaleed22/connectly-remote-plugin/releases/latest)
    and upload it in **Settings → Applications**.
@@ -21,9 +20,12 @@ contract documented by Remote's installable applications.
    on your computer. Use a different key for each project if desired.
 4. Click **Connect** on the Connectly card, or use its panel below the app list.
    **Public SSH** shows the server's public IPv4
-   address and this container's allocated SSH port. Use **Copy SSH command** to
-   connect directly into `/workspace`, or **Open /workspace in VS Code**.
-   Your SSH key must be available through your local SSH agent or SSH config.
+   address and this container's allocated SSH port. Enter your private key's
+   path on your computer, such as `~/.ssh/remote-project`. Never paste the key
+   contents. Use **Copy SSH config** and add the entry to your local
+   `~/.ssh/config` before any `Host *` defaults (Windows:
+   `%USERPROFILE%/.ssh/config`). Then use **Open /workspace in VS Code** or
+   **Copy SSH command**. Both use that entry's exact port and private key.
 5. Allow the displayed TCP port in your host/cloud firewall. This is raw SSH,
    not the HTTPS dev-server URL; a proxied HTTP hostname cannot carry it.
 
@@ -33,16 +35,11 @@ set **Public SSH IPv4 address** during installation. The generic Remote connecti
 panel still shows the listener's bind address (`0.0.0.0`); use Connectly's
 **Public SSH** address to connect from your computer.
 
-Add this to your local `~/.ssh/config`, using the actual host and port:
-
-```sshconfig
-Host remote-project
-    HostName SERVER_IP
-    Port 2222
-    User root
-    IdentityFile ~/.ssh/remote-project
-    IdentitiesOnly yes
-```
+Connectly generates a separate SSH alias for each public IP and port, so containers
+on the same server keep their own connection settings. The key path is remembered
+only in this browser; it is never sent to Remote. If VS Code uses a custom
+`remote.SSH.configFile`, add the generated entry to that file instead. Update the
+entry if you change the container's host port or local private key.
 
 In VS Code, install **Remote - SSH**, then use Connectly's **Open /workspace in
 VS Code** link. If the browser cannot open VS Code, use **Copy VS Code command**

@@ -31,7 +31,7 @@ class SSHAccessTests(unittest.TestCase):
         self.config_dir = self.root / "etc-ssh"
         self.config_dir.mkdir()
         self.config = self.config_dir / "ssh-access.conf"
-        self.key = self.root / "client"
+        self.key = self.root / "custom client key"
         subprocess.run(["ssh-keygen", "-q", "-t", "ed25519", "-N", "",
                         "-f", str(self.key)], check=True)
         with socket.socket() as sock:
@@ -133,6 +133,24 @@ class SSHAccessTests(unittest.TestCase):
         self.assertEqual(accepted.returncode, 0,
                          accepted.stderr + (self.root / "server.log").read_text())
         self.assertEqual(accepted.stdout, "ssh-access-authenticated")
+        # Exercise the exact generated alias VS Code uses, without -i or -p
+        # overrides, against a real SSH listener and a non-default key path.
+        generator = (
+            f'import {{ connectionDetails }} from {json.dumps((APP / "ui/scripts/connection.js").as_uri())};'
+            'console.log(JSON.stringify(connectionDetails(JSON.parse(process.argv[1]), process.argv[2])));'
+        )
+        generated = json.loads(subprocess.check_output([
+            "node", "--experimental-default-type=module", "--input-type=module", "-e", generator,
+            json.dumps({"publicIP": "127.0.0.1", "port": self.port}), str(self.key)], text=True))
+        client_config = self.root / "client-config"
+        client_config.write_text(generated["sshConfig"])
+        via_alias = subprocess.run([
+            "ssh", "-F", str(client_config), "-o", "BatchMode=yes", "-o",
+            "StrictHostKeyChecking=yes", "-o", f"UserKnownHostsFile={known}",
+            generated["alias"], "printf alias-authenticated"],
+            capture_output=True, text=True, timeout=10)
+        self.assertEqual(via_alias.returncode, 0, via_alias.stderr)
+        self.assertEqual(via_alias.stdout, "alias-authenticated")
         sftp = subprocess.run([
             "sftp", "-F", "/dev/null", "-b", "-", "-o", "BatchMode=yes", "-o",
             "IdentitiesOnly=yes", "-o", "StrictHostKeyChecking=yes", "-o",

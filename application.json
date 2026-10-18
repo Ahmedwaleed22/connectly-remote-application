@@ -3,7 +3,7 @@
   "name": "Connectly",
   "description": "Connect to this project's container using SSH or VS Code Remote SSH with your own key.",
   "category": "development",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "icon": "terminal",
   "scopes": ["project"],
   "port": {

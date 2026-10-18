@@ -57,15 +57,53 @@ function mountConnection(host, remote, target) {
       if (disposed) return;
       const connection = connectionDetails(data);
       status.textContent = `Public SSH: ${connection.endpoint} · root · /workspace`;
+      const setup = document.createElement("p");
+      setup.textContent = "1. Enter the path to your private key on this computer. 2. Add the generated entry to ~/.ssh/config (Windows: %USERPROFILE%/.ssh/config), before any Host * defaults. 3. Open VS Code.";
+      const label = document.createElement("label");
+      label.textContent = "Private key path on your computer";
+      const keyPath = document.createElement("input");
+      keyPath.type = "text";
+      keyPath.placeholder = "~/.ssh/my_container_key";
+      keyPath.autocomplete = "off";
+      keyPath.spellcheck = false;
+      label.append(keyPath);
+      const hint = document.createElement("p");
+      hint.textContent = "Enter a path, not the key contents. This stays in your browser and is never sent to the server.";
+      const config = document.createElement("code");
+      const actions = document.createElement("div");
+      const validation = document.createElement("p");
+      validation.setAttribute("role", "status");
       const open = document.createElement("a");
-      open.href = connection.vscode;
       open.textContent = "Open /workspace in VS Code";
       const command = document.createElement("code");
-      command.textContent = connection.ssh;
       const codeCommand = document.createElement("code");
-      codeCommand.textContent = connection.code;
-      details.append(open, copyButton("Copy SSH command", connection.ssh),
-        copyButton("Copy VS Code command", connection.code), command, codeCommand);
+      const preference = `connectly.keyPath.${connection.endpoint}`;
+      try { keyPath.value = localStorage.getItem(preference) || ""; } catch { /* Storage can be disabled. */ }
+      function update() {
+        actions.replaceChildren();
+        config.textContent = "";
+        command.textContent = "";
+        codeCommand.textContent = "";
+        open.removeAttribute("href");
+        validation.textContent = "";
+        if (!keyPath.value.trim()) {
+          validation.textContent = "Enter your private key path to generate the SSH config.";
+          return;
+        }
+        try {
+          const configured = connectionDetails(data, keyPath.value);
+          config.textContent = configured.sshConfig;
+          open.href = configured.vscode;
+          command.textContent = configured.ssh;
+          codeCommand.textContent = configured.code;
+          actions.append(copyButton("Copy SSH config", configured.sshConfig), open,
+            copyButton("Copy SSH command", configured.ssh), copyButton("Copy VS Code command", configured.code));
+          try { localStorage.setItem(preference, keyPath.value); } catch { /* Optional local preference. */ }
+        } catch (error) { validation.textContent = error.message; }
+      }
+      keyPath.addEventListener("input", update);
+      details.append(setup, label, hint, validation, config, actions, command, codeCommand);
+      update();
     } catch (error) {
       if (disposed) return;
       status.textContent = error.message || "Could not load the public SSH address.";
