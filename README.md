@@ -13,7 +13,7 @@ contract documented by Remote's installable applications.
 1. On your own computer, create a key if needed:
    `ssh-keygen -t ed25519 -f ~/.ssh/remote-project`.
 2. Download the installable ZIP from the
-   [latest release](https://github.com/Ahmedwaleed22/connectly-remote-plugin/releases/latest)
+   [latest release](https://github.com/Ahmedwaleed22/connectly-remote-application/releases/latest)
    and upload it in **Settings → Applications**.
 3. Install **Connectly** in the project's Applications tab. Paste the contents
    of `~/.ssh/remote-project.pub` into **SSH public key**. Keep the private key
