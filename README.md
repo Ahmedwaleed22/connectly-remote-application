@@ -79,42 +79,6 @@ The project container must be running. Container stop/recycle interrupts session
 reconnect when Remote has restored the container and application. This package
 does not configure firewalls, DNS, NAT, or keep a project awake indefinitely.
 
-## Releases
-
-Set `version` in `application.json`, commit and push the changes, then push the
-matching tag. For example, with version `0.1.0`:
-
-```bash
-git tag v0.1.0
-git push origin v0.1.0
-```
-
-GitHub Actions checks the package, creates a GitHub Release, and attaches
-`connectly-0.1.0.zip`. Download that asset to install in Remote. The automatic
-GitHub source archives include development files; the attached plugin ZIP holds
-only `README.md`, `LICENSE`, `application.json`, and `infra/install.sh` at its root.
-A tag/version mismatch fails the workflow before publishing. Use a new version
-and tag for each release. No additional GitHub token secret is needed: the
-workflow uses its repository-scoped `GITHUB_TOKEN` with `contents: write`.
-
-To build the same ZIP locally:
-
-```bash
-python3 -B infra/test_package.py
-python3 -B infra/package.py --tag v0.1.0 --output-dir /tmp/ssh-access-release
-```
-
-## Verification
-
-Run `python3 infra/test_install.py` as root on a Linux system with OpenSSH
-installed. Tests redirect provisioning paths to a temporary directory and check
-real OpenSSH configuration, host identity preservation, and rejected inputs.
-They temporarily create `/run/sshd` when absent, and run a short-lived loopback
-listener to test successful login and rejection of an unrelated key.
-Run `bash -n infra/install.sh` for shell syntax. Fresh apt installation, full LXD
-lifecycle, VS Code interaction, and external firewall reachability must be verified
-on your Remote server after installation.
-
 ## License
 
 Licensed under the GNU Affero General Public License, version 3 or later
