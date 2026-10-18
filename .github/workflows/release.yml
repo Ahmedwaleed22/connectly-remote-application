@@ -38,5 +38,5 @@ jobs:
             gh release upload "$RELEASE_TAG" "$RUNNER_TEMP"/package/*.zip --clobber
           else
             gh release create "$RELEASE_TAG" "$RUNNER_TEMP"/package/*.zip \
-              --verify-tag --title "Remote's SSH Access $RELEASE_TAG" --generate-notes
+              --verify-tag --title "Connectly $RELEASE_TAG" --generate-notes
           fi

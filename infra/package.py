@@ -18,7 +18,7 @@ def build_package(root, output_dir, tag):
         if not (root / name).is_file() or (root / name).is_symlink():
             raise ValueError(f"missing regular package file: {name}")
     output_dir.mkdir(parents=True, exist_ok=True)
-    archive = output_dir / f"ssh-access-{version}.zip"
+    archive = output_dir / f"connectly-{version}.zip"
     with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as package:
         for name in files:
             package.write(root / name, name)

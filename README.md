@@ -1,4 +1,4 @@
-# Remote's SSH Access
+# Connectly
 
 A plugin for [Remote](https://github.com/futrx-com/remote.futrx) that enables
 per-container SSH access and connections from VS Code Remote SSH.
@@ -12,10 +12,10 @@ contract documented by Remote's installable applications.
 
 1. On your own computer, create a key if needed:
    `ssh-keygen -t ed25519 -f ~/.ssh/remote-project`.
-2. Download `ssh-access-<version>.zip` from the
+2. Download the installable ZIP from the
    [latest release](https://github.com/Ahmedwaleed22/remote-ssh-access-plugin/releases/latest)
    and upload it in **Settings → Applications**.
-3. Install **SSH Access** in the project's Applications tab. Paste the contents
+3. Install **Connectly** in the project's Applications tab. Paste the contents
    of `~/.ssh/remote-project.pub` into **SSH public key**. Keep the private key
    on your computer. Use a different key for each project if desired.
 4. Read the allocated host port on the installed application. Remote prefers
@@ -90,7 +90,7 @@ git push origin v0.1.0
 ```
 
 GitHub Actions checks the package, creates a GitHub Release, and attaches
-`ssh-access-0.1.0.zip`. Download that asset to install in Remote. The automatic
+`connectly-0.1.0.zip`. Download that asset to install in Remote. The automatic
 GitHub source archives include development files; the attached plugin ZIP holds
 only `README.md`, `LICENSE`, `application.json`, and `infra/install.sh` at its root.
 A tag/version mismatch fails the workflow before publishing. Use a new version
