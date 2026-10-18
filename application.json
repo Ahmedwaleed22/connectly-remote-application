@@ -1,0 +1,33 @@
+{
+  "id": "ssh-access",
+  "name": "SSH Access",
+  "description": "Connect to this project's container using SSH or VS Code Remote SSH with your own key.",
+  "category": "development",
+  "version": "0.1.0",
+  "icon": "terminal",
+  "scopes": ["project"],
+  "port": {
+    "internal": 2222,
+    "defaultExternal": 2222,
+    "protocol": "tcp",
+    "bindAddress": "0.0.0.0"
+  },
+  "env": [
+    {
+      "key": "SSH_PUBLIC_KEY",
+      "label": "SSH public key (one OpenSSH public key, never your private key)",
+      "required": true
+    }
+  ],
+  "connection": { "user": "root" },
+  "service": {
+    "name": "ssh-access",
+    "description": "Project SSH access",
+    "command": ["/bin/sh", "-c", "install -d -m 755 /run/sshd && exec /usr/sbin/sshd -D -e -f /etc/ssh/ssh-access.conf"],
+    "restart": "on-failure",
+    "restartSec": 2
+  },
+  "healthcheck": {
+    "command": "ssh-keyscan -T 2 -p {{internalPort}} 127.0.0.1 2>/dev/null | grep -q 'ssh-ed25519'"
+  }
+}
