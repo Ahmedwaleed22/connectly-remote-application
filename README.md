@@ -1,4 +1,4 @@
-# SSH Access
+# Remote's SSH Access
 
 Standalone Remote application, uploaded as a ZIP. Install it in each project
 whose existing container you want to reach. No Remote core changes or separate
