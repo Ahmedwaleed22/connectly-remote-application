@@ -1,6 +1,6 @@
 # Connectly
 
-A plugin for [Remote](https://github.com/futrx-com/remote.futrx) that enables
+An application for [Remote](https://github.com/futrx-com/remote.futrx) that enables
 per-container SSH access and connections from VS Code Remote SSH.
 
 Standalone Remote application, uploaded as a ZIP. Install it in each project
