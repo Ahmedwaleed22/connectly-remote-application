@@ -1,5 +1,8 @@
 # Remote's SSH Access
 
+A plugin for [Remote](https://github.com/futrx-com/remote.futrx) that enables
+per-container SSH access and connections from VS Code Remote SSH.
+
 Standalone Remote application, uploaded as a ZIP. Install it in each project
 whose existing container you want to reach. No Remote core changes or separate
 application container are required. Requires the structured manifest-service
